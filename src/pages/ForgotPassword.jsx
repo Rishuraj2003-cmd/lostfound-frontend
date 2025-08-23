@@ -5,17 +5,21 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
     setError(null);
+    setLoading(true);
 
     try {
       const res = await api.post("/auth/forgot-password", { email });
       setMessage(res.data.message || "If the email exists, a reset link was sent.");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,7 +39,9 @@ export default function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <button className="btn btn-primary w-full">Send Reset Link</button>
+          <button className="btn btn-primary w-full" disabled={loading}>
+            {loading ? "Sending..." : "Send Reset Link"}
+          </button>
         </form>
         {message && <p className="mt-3 text-green-600">{message}</p>}
         {error && <p className="mt-3 text-red-600">{error}</p>}

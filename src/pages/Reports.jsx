@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-
+import { api } from "../api/client";
 export default function Reports() {
   const [reports, setReports] = useState([]);
-  const [filters, setFilters] = useState({ q: "", type: "all", city: "" });
+  onst [filters, setFilters] = useState({ q: "", type: "", city: "" });
 
   useEffect(() => {
     fetchReports();
@@ -12,8 +12,8 @@ export default function Reports() {
 
   const fetchReports = async () => {
     try {
-      const { data } = await axios.get("/api/reports", { params: filters });
-      setReports(data);
+      const { data } = await api.get("/reports", { params: filters });
+      setReports(data.items || []);
     } catch (err) {
       console.error(err);
     }
@@ -39,11 +39,16 @@ export default function Reports() {
         />
         <select
           className="px-4 py-2 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-          onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-        >
+          onChange={(e)  =>
+            setFilters({
+              ...filters,
+              type: e.target.value === "all" ? "" : e.target.value.toUpperCase(),
+            })
+          }
+          >
           <option value="all">All</option>
-          <option value="lost">Lost</option>
-          <option value="found">Found</option>
+          <option value="LOST">Lost</option>
+          <option value="FOUND">Found</option>
         </select>
         <input
           type="text"
@@ -74,7 +79,7 @@ export default function Reports() {
               />
               <span
                 className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold ${
-                  r.type === "lost"
+                  r.type === "LOST"
                     ? "bg-red-100 text-red-600"
                     : "bg-green-100 text-green-600"
                 }`}

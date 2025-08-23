@@ -3,7 +3,9 @@ import { io } from "socket.io-client";
 import { Github, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 
-const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5001");
+const raw = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+const socketBase = raw.replace(/\/api\/?$/, ""); // strip `/api`
+const socket = io(socketBase);
 
 const Footer = () => {
   const [totalVisitors, setTotalVisitors] = useState(0);

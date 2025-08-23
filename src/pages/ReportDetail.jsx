@@ -12,7 +12,7 @@ export default function ReportDetail() {
   // Fetch report + comments initially
   useEffect(() => {
     api.get(`/reports/${id}`).then((r) => setReport(r.data));
-    api.get(`/comments/${id}`).then((r) => setComments(r.data));
+    api.get(`/comments/${id}`).then((r) => setComments(r.data.items || r.data || []));
   }, [id]);
 
   // Setup socket connection
@@ -41,7 +41,7 @@ export default function ReportDetail() {
     const temp = {
       _id: Date.now(),
       body,
-      author: { name: "You" },
+      postedBy: { name: "You" },
       createdAt: new Date().toISOString(),
     };
     setComments((prev) => [...prev, temp]);
@@ -92,7 +92,7 @@ export default function ReportDetail() {
               <div key={c._id} className="border rounded p-2 text-sm">
                 <div className="flex justify-between text-xs text-gray-500">
                   <span className="font-semibold">
-                    {c.author?.name || "Anonymous"}
+                  {c.postedBy?.name || c.author?.name || "Anonymous"}
                   </span>
                   <span>{new Date(c.createdAt).toLocaleString()}</span>
                 </div>

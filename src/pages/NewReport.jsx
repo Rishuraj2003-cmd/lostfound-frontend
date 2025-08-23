@@ -41,12 +41,21 @@ export default function NewReport() {
     files.forEach((f) => fd.append("images", f));
   
     try {
+      if (!form.title?.trim() || !form.description?.trim()) {
+        alert("Title and description are required.");
+        return;
+      }
+      
+      const fd = new FormData();
+      const lat = form.lat === "" ? "" : String(parseFloat(form.lat));
+      const lng = form.lng === "" ? "" : String(parseFloat(form.lng));
+      Object.entries({ ...form, lat, lng }).forEach(([k, v]) => fd.append(k, v));
+      files.forEach((f) => fd.append("images", f));
+      
       await api.post("/reports", fd, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${currentUser.token}`,
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
+      
       alert("Report posted successfully!");
       nav("/");
     } catch (err) {
