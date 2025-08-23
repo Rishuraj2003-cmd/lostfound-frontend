@@ -13,19 +13,19 @@ const socket = io(socketBase);
 const Footer = () => {
   const [totalVisitors, setTotalVisitors] = useState(0);
 
-  // Fetch initial total visitors
-  useEffect(() => {
-    fetch(`${API_URL}/visitor`)   // ✅ always hits /api/visitor
-      .then((res) => res.json())
-      .then((data) => setTotalVisitors(data.count))
-      .catch((err) => console.error("Visitor fetch failed:", err));
-  }, []);
+// Fetch initial total visitors
+useEffect(() => {
+  fetch(`${API_URL}/api/visitor`)   // ✅ correct endpoint
+    .then((res) => res.json())
+    .then((data) => setTotalVisitors(data.count))
+    .catch((err) => console.error("Visitor fetch failed:", err));
+}, []);
 
-  // Update live total count
-  useEffect(() => {
-    socket.on("visitorCount", (count) => setTotalVisitors(count));
-    return () => socket.off("visitorCount");
-  }, []);
+// Update live total count via socket
+useEffect(() => {
+  socket.on("visitorCount", (count) => setTotalVisitors(count));
+  return () => socket.off("visitorCount");
+}, []);
 
   return (
     <motion.footer
