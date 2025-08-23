@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { Github, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
+import { api } from "../api/client";   // axios client import करो
 
-// Always use /api base
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 // socket.io base (strip /api)
 const socketBase = API_URL.replace(/\/api\/?$/, "");
@@ -13,19 +13,26 @@ const socket = io(socketBase);
 const Footer = () => {
   const [totalVisitors, setTotalVisitors] = useState(0);
 
-// Fetch initial total visitors
-useEffect(() => {
-  fetch(`${API_URL}/api/visitor`)   // ✅ correct endpoint
-    .then((res) => res.json())
-    .then((data) => setTotalVisitors(data.count))
-    .catch((err) => console.error("Visitor fetch failed:", err));
-}, []);
+  // Fetch initial total visitors
+  useEffect(() => {
+    const fetchVisitors = async () => {
+      try {
+        const res = await api.get("/visitor");   // ✅ सिर्फ `/visitor`
+        console.log("Visitor API response:", res.data);
+        setTotalVisitors(res.data.count || 0);   // fallback 0
+      } catch (err) {
+        console.error("Visitor fetch failed:", err);
+      }
+    };
 
-// Update live total count via socket
-useEffect(() => {
-  socket.on("visitorCount", (count) => setTotalVisitors(count));
-  return () => socket.off("visitorCount");
-}, []);
+    fetchVisitors();
+  }, []);
+
+  // Update live total count via socket
+  useEffect(() => {
+    socket.on("visitorCount", (count) => setTotalVisitors(count));
+    return () => socket.off("visitorCount");
+  }, []);
 
   return (
     <motion.footer

@@ -1,11 +1,9 @@
-// src/api/client.js
 import axios from "axios";
 
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
-// Ensure no trailing slashes that can create `//auth/login` issues
-const baseURL = BASE.replace(/\/+$/, "");
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
-export const api = axios.create({baseURL: `${import.meta.env.VITE_API_URL}/api`, // always append /api here
+export const api = axios.create({
+  baseURL: `${BASE.replace(/\/+$/, "")}/api`, // हमेशा एक /api जोड़ो
   withCredentials: true,
 });
 
