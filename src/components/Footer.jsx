@@ -3,8 +3,11 @@ import { io } from "socket.io-client";
 import { Github, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 
-const raw = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
-const socketBase = raw.replace(/\/api\/?$/, ""); // strip `/api`
+// Always use /api base
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+
+// socket.io base (strip /api)
+const socketBase = API_URL.replace(/\/api\/?$/, "");
 const socket = io(socketBase);
 
 const Footer = () => {
@@ -12,15 +15,15 @@ const Footer = () => {
 
   // Fetch initial total visitors
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api/visitor`)
-      .then(res => res.json())
-      .then(data => setTotalVisitors(data.count))
-      .catch(console.error);
+    fetch(`${API_URL}/visitor`)   // ✅ always hits /api/visitor
+      .then((res) => res.json())
+      .then((data) => setTotalVisitors(data.count))
+      .catch((err) => console.error("Visitor fetch failed:", err));
   }, []);
 
   // Update live total count
   useEffect(() => {
-    socket.on("visitorCount", count => setTotalVisitors(count));
+    socket.on("visitorCount", (count) => setTotalVisitors(count));
     return () => socket.off("visitorCount");
   }, []);
 
@@ -35,9 +38,11 @@ const Footer = () => {
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-gray-700 text-sm gap-3">
         
         {/* Visitors */}
-        <p>🌍 Total Visits: <span className="font-semibold">{totalVisitors}</span></p>
+        <p>
+          🌍 Total Visits: <span className="font-semibold">{totalVisitors}</span>
+        </p>
 
-        {/* Middle Section (two lines stacked) */}
+        {/* Middle Section */}
         <div className="text-center">
           <p>
             © {new Date().getFullYear()} Lost & Found | Built by{" "}
