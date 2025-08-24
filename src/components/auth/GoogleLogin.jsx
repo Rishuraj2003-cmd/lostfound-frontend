@@ -5,10 +5,9 @@ import React from "react";
 
 export default function GoogleLogin() {
   const handleGoogleLogin = () => {
-    // ✅ API base should be without `/api`
     const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5001";
-    const googleAuthUrl = `${apiBase.replace(/\/+$/, "")}/api/auth/google`;
-    window.location.href = googleAuthUrl;
+const googleAuthUrl = `${apiBase.replace(/\/+$/, "")}/auth/google`;
+window.location.href = googleAuthUrl;
   };
 
   return (
